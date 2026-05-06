@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Ensure the RewriteBase matches your folder name
+    RewriteBase /matching/
+
+    # If the request isn't already for the public folder, send it there
+    RewriteCond %{REQUEST_URI} !^/matching/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<FilesMatch ".env">
+    Require all denied
+</FilesMatch>
