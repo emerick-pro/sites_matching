@@ -1,0 +1,55 @@
+services:
+
+  app:
+    build: .
+    container_name: matching_app
+    restart: unless-stopped
+    ports:
+      - "8077:80"
+    env_file: .env.docker
+    environment:
+      DB_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Live-reload: mount source so edits reflect without rebuild
+      - .:/var/www/html
+      # Keep vendor inside the container (not overwritten by the mount)
+      - vendor_data:/var/www/html/vendor
+
+  db:
+    image: mysql:8.0
+    container_name: matching_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: matching_db
+      MYSQL_USER: matching_user
+      MYSQL_PASSWORD: matching_pass
+      MYSQL_ROOT_PASSWORD: root_secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_secret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: matching_pma
+    restart: unless-stopped
+    ports:
+      - "8078:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: matching_user
+      PMA_PASSWORD: matching_pass
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+  vendor_data:
