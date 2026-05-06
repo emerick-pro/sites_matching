@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MatchingController;
-use App\Http\Controllers\MatchingApiController;
+use App\Http\Controllers\Api\MatchingApiController;
 
 //Auth::routes();
 
@@ -22,7 +22,7 @@ Route::prefix('matchings')->group(function () {
 });
 
 //--Route API pour fournir le id DHIS2 à partir du code SIDAInfo
-Route::get('/matching/by-code/{sidainfo_code}', [App\http\Controllers\Api\MatchingApiController::class, 'getDhis2Id']);
+Route::get('/matching/by-code/{sidainfo_code}', [MatchingApiController::class, 'getDhis2Id']);
 
 Route::get('/', function () {
     return view('welcome');
